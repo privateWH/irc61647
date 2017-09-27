@@ -11,6 +11,7 @@ require_once (realpath(dirname(__FILE__)."/../classes/autoloader.php"));
 //Core\Logger::setLoggerLevel(\Core\Logger::LOG_LEVEL_DEBUG);
 
 $router = new Router();
+$router->deprecateNoCDN();
 
 /* All paths are using Regular Expression, PHP doesn't support named group in RegEx so it will be cryptic*/
 
@@ -35,5 +36,9 @@ $router->accept("GET", "/^\/data\/get\/(\d+)\/start\/(\d+)\/limit\/(\d+)\/sort\/
  */
 $router->accept("POST", "/^\/data\/(\d+)\/add$/s","Controller\DataController::addNewData");
 
+$result = $router->response();
 
-$router->response();
+if (Router::isServingStatic()){
+    // Code for sending static content after parses through the index.php router script
+    return false;
+}

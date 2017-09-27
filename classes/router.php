@@ -12,6 +12,18 @@ class Router{
 
     private $logger;
 
+    private $noCDN=false;
+
+    private static $isServingStatic=false;
+
+    /**
+     * @return bool
+     */
+    public static function isServingStatic(): bool
+    {
+        return self::$isServingStatic;
+    }
+
     /**
      * @var Core\Resolver[] resolvers
      */
@@ -46,6 +58,11 @@ class Router{
 
     }
 
+    public function deprecateNoCDN($staticFolder = "/^(\/web\/assets\/.*)$/s"){
+        $this->noCDN = true;
+        $this->staticFolder = $staticFolder;
+    }
+
     public function accept($requestMethod, $path, $handler){
         $this->registerController($requestMethod,$path,$handler);
     }
@@ -53,6 +70,13 @@ class Router{
     public function response(){
         $this->logger->debug("Current Path",self::$currentPath);
         $this->logger->debug("Request Method",self::$currentRequestMethod);
+
+        if ($this->noCDN){
+            if (preg_match($this->staticFolder,self::$currentPath,$matches)){
+                self::$isServingStatic = true;
+                return;
+            }
+        }
 
         $foundMatch = false;
 

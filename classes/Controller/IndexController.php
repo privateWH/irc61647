@@ -10,6 +10,7 @@ namespace Controller;
 class IndexController
 {
     public static function response(){
-        echo "Hello World";
+        $content = realpath(dirname(__FILE__).'/../../web/assets/views/desktop-index.html');
+        echo readfile($content);
     }
 }
