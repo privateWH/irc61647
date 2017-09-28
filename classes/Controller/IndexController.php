@@ -11,6 +11,6 @@ class IndexController
 {
     public static function response(){
         $content = realpath(dirname(__FILE__).'/../../web/assets/views/desktop-index.html');
-        echo readfile($content);
+        readfile($content);
     }
 }
