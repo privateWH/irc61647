@@ -1,11 +1,19 @@
 # This is for OHSU IRC61647 by Weinian He
-The project is written in PHP, JavaScript. It uses ReactJS and WebPack Only.
+The project is written in PHP, JavaScript, CSS and HTML5. It uses ReactJS, Axios and WebPack.
 
-All codes are writen from scratch in 3 nights roughly 15 hours. Roughly 30% of time learning ReactJs (all new), 49% of time writting code, 1% of time think about design pattern, 20% testing and debugging.  Didn't implement own UnitTest framework (Auto DataGen, Assertion) so only use PostMan, https://regex101.com, Chrome DevTool to do manual testing. 
+All codes are writen from scratch in 3 nights roughly 15 hours. The allocation of time is roughly 30% for learning ReactJs (all new), 49% for writting code, 1% for thinking about design and structure, 20% for testing and debugging.  Didn't implement UnitTest code, because I want to build my own framework (with just Auto DataGen, Assertion, and Performance Reporting). For manual testing: PostMan, https://regex101.com, Chrome DevTool was handy. 
+
+## Feature Completed:
+- Add, Remove, Get in frontend.
+- Utilizes external CSS for style, filter through Webpack.
+- Add, Remove, Update, Delete, Get (Sort By Key, Sort Order, Pagation, Filter) Save Data in Backend.
+
+## Summary
 
 The backend code works with PHP5+, frontend code goes through Babel transpile to ES2005.
 
-Folder structure:
+### Folder structure:
+#### Frontend
 - dir:frontend contain code for frontend, key files:
   - ConcreteDataTable.jsx, orchastrates all the events, life-cycles of the UI. 
     - Comments: The only React.component class should have done it with React.createClass to keep it simple but first attempt.
@@ -15,6 +23,8 @@ Folder structure:
     - Comments: I think the abilities to abort request is essential, my first attempt was with fetch API but ditched after realize is not compatible with old IE and can't abort request.
   - BasicDataTable.jsx (not used in current build) 
     - Comments: It's historic significant, first attempt with Stateless Component. It turns out to just a simple DSL for Table creation.)
+    
+#### Backend
 - dir:classes contain code for backend using (MVC, Factory and Singleton pattern), key files:
   - router.php, implementation of accepting calls and wires to the proper controller.
   - dir:DataRepository contains code for entry point to get various data by sourceId.
@@ -24,5 +34,36 @@ Folder structure:
 - dir:web is the root directory for backend with router script index.php.
 - dir:web/assets is repository for storing frontend code when no CDN is used. 
 
+## TODO:
+- Tweak Batch processing by automatically detect array of object instead of object to Add, Update.
+- Beautify the DataTable DSL, allow different themes by swapping classNames. 
+- Add Toaster or PopUp notify to have nicer UI. 
+- Add router to have different pages, just for fun.
+- Look at the patent for https://facebook.github.io/fixed-data-table/ and see how they do it.
+
+## Lessons Learn:
+- Keep it simple and high performance by implementing DSL for the UI over customizable data driven compoenents, costly to implement DLS though.
 
 
+
+MIT License
+
+Copyright (c) [2017] [Weinian He]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
