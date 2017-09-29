@@ -1,7 +1,7 @@
 # This is for OHSU IRC61647 by Weinian He
 The project is written in PHP, JavaScript, CSS and HTML5. It uses ReactJS, Axios and WebPack.
 
-All codes are writen from scratch in 3 nights roughly 15 hours. The allocation of time is roughly 30% for learning ReactJs (all new), 49% for writting code, 1% for thinking about design and structure, 20% for testing and debugging.  Didn't implement UnitTest code, because I want to build my own framework (with just Auto DataGen, Assertion, and Performance Reporting). For manual testing: PostMan, https://regex101.com, Chrome DevTool was handy. 
+All codes are writen from scratch in 3 nights roughly 15 hours. The allocation of time is roughly 30% for learning ReactJs (all new), 49% for writting code, 1% for thinking about design and structure, 20% for testing and debugging.  Manual tested with: PostMan, https://regex101.com, Chrome DevTool. 
 
 ## Feature Completed:
 - Add, Remove, Get in frontend.
@@ -40,9 +40,15 @@ The backend code works with PHP5+, frontend code goes through Babel transpile to
 - Add Toaster or PopUp notify to have nicer UI. 
 - Add router to have different pages, just for fun.
 - Look at the patent for https://facebook.github.io/fixed-data-table/ and see how they do it.
-
+- Implement my own unit testing tool:
+  - Specialized catagorical data generation. Randomizer, Edge Cases.
+  - Assertion with auto textual extraction.
+  - Performance Report.
+  - Maybe behavioral testing. just another set of language to learn.
+  
 ## Lessons Learn:
 - Keep it simple and high performance by implementing DSL for the UI over customizable data driven compoenents, costly to implement DLS though.
+
 
 
 
