@@ -1,0 +1,14 @@
+const DataTableHeader = ({header}) =>{
+    console.debug(header);
+    return(
+    <tr>{
+        /* <td>{item}-{index}</td>*/
+    header.map((item,index)=>{
+        return(
+            <DataTableColumn key={item+"-"+index} column={item}/>
+        )
+    })}
+
+    </tr>
+    )
+}
