@@ -35,6 +35,7 @@ The backend code works with PHP5+, frontend code goes through Babel transpile to
 - dir:web/assets is repository for storing frontend code when no CDN is used. 
 
 ## TODO:
+- This article give a lot better introduction than the official document http://lorenstewart.me/2016/10/31/react-js-forms-controlled-components/
 - Tweak Batch processing by automatically detect array of object instead of object to Add, Update.
 - Beautify the DataTable DSL, allow different themes by swapping classNames. 
 - Add Toaster or PopUp notify to have nicer UI. 
