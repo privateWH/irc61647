@@ -1,11 +1,11 @@
 import React from 'react';
 import {render} from 'react-dom';
-import ConcreteDataTable from './ConcreteDataTable.jsx';
+import NewDataTable from './NewDataTable.jsx';
 class App extends React.Component{
 	render(){
 		return(
 			<div>
-				<ConcreteDataTable/>
+				<NewDataTable/>
 			</div>
 			) ;
 	}
