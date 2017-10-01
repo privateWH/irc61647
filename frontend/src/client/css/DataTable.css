@@ -1,0 +1,35 @@
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+
+button.save-hide{
+    display:none;
+}
+button.save-show{
+    display:block;
+}
+button.delete-show{
+    display:block;
+}
+button.delete-hide{
+    display:none;
+}
+tr.add-new-data-show{
+    display:table-row;
+}
+tr.add-new-data-hide{
+    display:none;
+}

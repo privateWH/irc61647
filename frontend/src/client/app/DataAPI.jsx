@@ -8,7 +8,7 @@ class DataAPI {
             headers: {'AUTH-TOKEN': 'ABCDEFGHIJKLMNOPQR'}
         }
         var $endpoint = '/data/' + $dataSourceId + '/add'
-        axios.post($endpoint, data.data, config).then(function (response) {
+        axios.post($endpoint, data.payload, config).then(function (response) {
             console.log(response);
             updateState(response);
 
@@ -36,6 +36,7 @@ class DataAPI {
             updateState(response);
 
         }).catch(function (error) {
+            debugger;
             if (error.response !== null){
                 if (error.response.data !== null){
                     failedState(error.response.data.message);
@@ -52,7 +53,7 @@ class DataAPI {
         //var $endpoint = '/data/get/1/list-of-limit';
         dataSourceId = 1;
         var startIndex = 0;
-        var limitBy = 20;
+        var limitBy = 100;
         var sortOrder = "asc";
         var sortKey = 0;
         var $endpoint = '/data/get/'+dataSourceId+'/start/'+startIndex+'/limit/'+limitBy+'/sort/'+sortOrder+'/by/'+sortKey;
@@ -70,6 +71,7 @@ class DataAPI {
                 }
             })
             .catch(function (error) {
+                debugger;
                 if (error.response !== null){
                     if (error.response.data !== null){
                         failedState(error.response.data.message);

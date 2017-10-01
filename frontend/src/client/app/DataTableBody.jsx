@@ -8,11 +8,13 @@ class DataTableBody extends React.Component{
         super(props);
         console.log("Called DataTableBody");
         this.state = {
-            body: this.props.body
+            body: this.props.body,
+            showAddNewData: this.props.showAddNewData
         };
 
         this.notifyUpdatedData = this.props.notifyUpdatedData;
         this.notifyDeletedData = this.props.notifyDeletedData;
+        this.notifyAddNewData = this.props.notifyAddNewData;
         this.notifySorted = this.props.notifySorted;
         this.signalBodyLockForUpdate = this.signalBodyLockForUpdate.bind(this);
         this.signalBodyLockForDelete = this.signalBodyLockForDelete.bind(this);
@@ -20,6 +22,10 @@ class DataTableBody extends React.Component{
         this.onDeleteButtonClicked = this.onDeleteButtonClicked.bind(this);
         this.onSortClick = this.onSortClick(this);
         this.notifiedSaveInput = this.notifiedSaveInput.bind(this);
+
+        this.notifiedSaveAddInput = this.notifiedSaveAddInput.bind(this);
+        this.notifiedCancelSaveAddInput = this.notifiedCancelSaveAddInput.bind(this);
+
     }
 
     signalBodyLockForUpdate(){
@@ -45,46 +51,62 @@ class DataTableBody extends React.Component{
     }
     onDeleteButtonClicked(configCol){
         const rowIndex = configCol.getRowIndex();
+        const deleteRecordKey =this.state.body.getRows()[rowIndex].getColumns()[0].getValue();
+        /*
+        //AUTOMATIC Refreshed from parent down to this
         let newBody =update(this.state.body,{rows:{$unset:[rowIndex]}});
-        this.setState({body:newBody});
-        this.notifyDeletedData();
-        //TODO send update to server.
+        this.setState({body:newBody},function(){
+        });
+        */
+        this.notifyDeletedData(deleteRecordKey);
     }
 
     notifiedSaveInput(row){
         //TODO send update to server.
         console.log(row);
     }
+    notifiedSaveAddInput(row){
+        this.notifyAddNewData(row);
+    }
+    notifiedCancelSaveAddInput(){
+        this.setState({showAddNewData:false});
+        console.log("Cancelled Save Add Input");
+    }
 
     componentWillReceiveProps(nextProps){
-        console.log("refreshed table data state");
+        console.log("new props received");
         if (this.props != nextProps){
             this.setState({
-            body:nextProps.body
+                body:nextProps.body,
+                showAddNewData:nextProps.showAddNewData
             })
+            console.log("refreshed table data state");
+
         }
     }
 
     render(){
         let body_listOfRows = null;
-        if (this.state.body.getRows() === null){
-            body_listOfRows = (<tr><td colSpan="5"><span>No Data Exists in the Data Base</span></td></tr>);
+        if (this.state.body.getRows() === null || this.state.body.getRows().length === 0){
+            body_listOfRows = (<tr key="no-data-found"><td colSpan="5"><span>No Data Exists in the Data Base</span></td></tr>);
         } else{
             body_listOfRows = this.state.body.getRows().map((row, index) => {
                 const configCol = row.getColumns()[4];
                 if (configCol.getIsEditing()) {
                     return (<DataTableBodyEditRow notifyDeleteClicked={this.onDeleteButtonClicked}
-                                                  notifySaveInput={this.notifiedSaveInput} key={index} value={row}/>)
+                                                  notifySaveInput={this.notifiedSaveInput} key={row.getColumns()[0].getValue()} value={row}/>)
                 } else {
                     return (<DataTableBodyDefaultRow notifyDeleteClicked={this.onDeleteButtonClicked}
-                                                     notifyUpdateClicked={this.onEditButtonClicked} key={index}
+                                                     notifyUpdateClicked={this.onEditButtonClicked} key={row.getColumns()[0].getValue()}
                                                      value={row}/>)
                 }
             });
         }
+        const showAddNewDataClassName = (this.state.showAddNewData)?"add-new-data-show":"add-new-data-hide";
 
         return(
             <tbody>
+            <DataTableBodyAddNewRow showAddNewDataClassName={showAddNewDataClassName} notifySaveInput={this.notifiedSaveAddInput} notifyCancelInput={this.notifiedCancelSaveAddInput} />
             {body_listOfRows}
             </tbody>
         );
@@ -95,6 +117,7 @@ class DataTableBody extends React.Component{
 DataTableBody.defaultProps = {
     notifyUpdatedData: ()=>{},
     notifyDeletedData: ()=>{},
+    notifyAddNewData: ()=>{},
     notifySorted:()=>{}
 };
 
@@ -105,6 +128,70 @@ DataTableBody.PropTypes = {
     notifyUpdatedData:PropTypes.func
 };
 
+class DataTableBodyAddNewRow extends React.Component{
+    constructor(props){
+        super(props);
+        this.notifySaveInput = this.props.notifySaveInput.bind(this);
+        this.notifyCancelInput = this.props.notifyCancelInput.bind(this);
+        this.templateColumns = [
+            new Model.DataBodyColumn("",0),
+            new Model.DataBodyColumn("",1),
+            new Model.DataBodyColumn("",2),
+            new Model.DataBodyColumn("",3),
+            new Model.DataBodyFunctionColumn(-1,true,false,4)
+        ];
+        this.state = {
+            columns:this.templateColumns,
+            editingRecord:this.templateColumns,
+            showAddNewDataClassName:this.props.showAddNewData
+        };
+        this.onValueChangeNotify = this.onValueChangeNotify.bind(this);
+        this.onEditSaveNotify = this.onEditSaveNotify.bind(this);
+        this.onEditSaveCancelNotify = this.onEditSaveCancelNotify.bind(this);
+    }
+    componentWillReceiveProps(nextProps){
+        if (this.props != nextProps){
+            this.setState({
+                showAddNewDataClassName:nextProps.showAddNewDataClassName,
+                editingRecord:this.templateColumns,
+                columns:this.templateColumns
+            });
+        }
+    }
+    onValueChangeNotify(eventArg){
+        console.log("New Data Coming In");
+        console.log(eventArg);
+        const colIndex = eventArg.getIndex();
+        const newValue = eventArg.getValue();
+        const editRecord = update(this.state.editingRecord,{[colIndex]:{value:{$set:newValue}}});
+        this.setState({editingRecord:editRecord});
+    }
+    onEditSaveNotify(){
+        console.log("Saved with new Data");
+        this.notifySaveInput(this.state.editingRecord);
+    }
+    onEditSaveCancelNotify(){
+        console.log("Save Cancel with no new Data");
+        // No state in this component needed to change
+        this.notifyCancelInput();
+    }
+    render(){
+        return(
+            <tr className={this.state.showAddNewDataClassName}>
+                <DataTableBodyTextColumn value={this.state.columns[0].getValue()}/>
+                <DataTableBodyInputColumn onValueChangeNotify={this.onValueChangeNotify} value={this.state.columns[1]}/>
+                <DataTableBodyInputColumn onValueChangeNotify={this.onValueChangeNotify} value={this.state.columns[2]}/>
+                <DataTableBodyInputColumnCustom onValueChangeNotify={this.onValueChangeNotify} value={this.state.columns[3]} placeHolder="Mac Address: 00:00:00:00:00"/>
+                <DataTableBodyFunctionColumn value={this.state.columns[4]} onEditSaveNotify={this.onEditSaveNotify} onEditCancelNotify={this.onEditSaveCancelNotify}/>
+            </tr>
+        );
+    }
+}
+
+DataTableBodyAddNewRow.defaultProps = {
+    notifySaveInput:()=>{},
+    notifyCancelInput:()=>{}
+}
 
 class DataTableBodyDefaultRow extends React.Component{
     constructor(props){
@@ -117,6 +204,13 @@ class DataTableBodyDefaultRow extends React.Component{
         //Proper Binding needed for the proper scope
         this.notifyUpdateClicked = this.notifyUpdateClicked.bind(this);
         this.notifyDeleteClicked = this.notifyDeleteClicked.bind(this);
+    }
+    componentWillReceiveProps(nextProp){
+        if (nextProp != this.props){
+            this.setState({
+                columns:nextProp.value.getColumns()
+            })
+        }
     }
 
     onEditClickNotified (){
@@ -160,6 +254,14 @@ class DataTableBodyEditRow extends React.Component{
         this.onEditSaveNotify = this.onEditSaveNotify.bind(this);
         this.onValueChangeNotify = this.onValueChangeNotify.bind(this);
     }
+    componentWillReceiveProps(nextProp){
+        if (nextProp != this.props){
+            this.setState({
+                columns:nextProp.value.getColumns(),
+                editingRecord:nextProp.value.getColumn()
+            })
+        }
+    }
     onValueChangeNotify(eventArg){
         console.log("New Data Coming In");
         console.log(eventArg);
@@ -175,7 +277,7 @@ class DataTableBodyEditRow extends React.Component{
     render(){
         return(
             <tr>
-                <DataTableBodyInputColumn onValueChangeNotify={this.onValueChangeNotify} value={this.state.columns[0]}/>
+                <DataTableBodyTextColumn value={this.state.columns[0].getValue()}/>
                 <DataTableBodyInputColumn onValueChangeNotify={this.onValueChangeNotify} value={this.state.columns[1]}/>
                 <DataTableBodyInputColumn onValueChangeNotify={this.onValueChangeNotify} value={this.state.columns[2]}/>
                 <DataTableBodyInputColumnCustom onValueChangeNotify={this.onValueChangeNotify} value={this.state.columns[3]} placeHolder="Mac Address: 00:00:00:00:00"/>
@@ -227,6 +329,7 @@ class DataTableBodyInputColumnCustom extends DataTableBodyInputColumn{
     constructor(props){
         super(props);
         this.onInputUpdated = this.onInputUpdated.bind(this);
+        this.onValueChangeNotify = this.onValueChangeNotify.bind(this);
     }
     onInputUpdated(event){
         const newValue = event.target.value;
@@ -234,12 +337,12 @@ class DataTableBodyInputColumnCustom extends DataTableBodyInputColumn{
             console.log("You have pass the input test");
             this.setState({textValue:newValue});
             const eventArgs = new Model.DataBodyColumn(newValue,this.state.index);
-            this.notifyValueUpdated(eventArgs);
+            this.onValueChangeNotify(eventArgs);
         }
     }
     render(){
         return(
-            <td><input type="text" onChange={this.onInputUpdated} value={this.state.textValue} placeholder={this.props.placeHolder}/></td>
+            <td><input type="text" maxLength="14" onChange={this.onInputUpdated} value={this.state.textValue} placeholder={this.props.placeHolder}/></td>
         );
     }
 }
@@ -260,7 +363,8 @@ class DataTableBodyFunctionColumn extends React.Component{
             isEditing:config.getIsEditing(),
             isDeleting:config.getIsDeleting(),
             rowIndex: config.getRowIndex(),
-            showSaveButton:config.getIsEditing()
+            showSaveButton:config.getIsEditing(),
+            showDeleteButton:!config.getIsEditing()
         }
 
         this.onEditNotify = this.props.onEditNotify.bind(this);
@@ -271,7 +375,34 @@ class DataTableBodyFunctionColumn extends React.Component{
         this.onEditButtonClick = this.onEditButtonClick.bind(this);
         this.onDeleteButtonClick = this.onDeleteButtonClick.bind(this);
         this.onSaveButtonClick = this.onSaveButtonClick.bind(this);
+        this.onCancelButtonClick = this.onCancelButtonClick.bind(this);
     }
+
+    componentWillReceiveProps(nextProp){
+        if (nextProp != this.props){
+            const config=nextProp.value;
+            this.setState({
+                isEditing:config.getIsEditing(),
+                isDeleting:config.getIsDeleting(),
+                rowIndex: config.getRowIndex(),
+                showSaveButton:config.getIsEditing(),
+                showDeleteButton:!config.getIsEditing()
+            });
+        }
+    }
+    onCancelButtonClick(){
+        if (this.state.isEditing){
+            this.setState({
+                isEditing:false,
+                showSaveButton:false,
+            })
+            this.onEditCancelNotify();
+        } else{
+            alert("The CANCEL function have been altered in MEMORY");
+        }
+
+    }
+
     onSaveButtonClick(){
         if (this.state.isEditing){
             this.setState({
@@ -288,13 +419,15 @@ class DataTableBodyFunctionColumn extends React.Component{
             // The Edit Button Already Changed to Cancel Text
             this.setState({
                 isEditing: false,
-                showSaveButton:false
+                showSaveButton:false,
+                showDeleteButton:false
             });
             this.onEditCancelNotify();
         } else {
             this.setState({
                 isEditing:true,
-                showSaveButton:true
+                showSaveButton:true,
+                showDeleteButton:true
             });
             this.onEditNotify();
         }
@@ -302,7 +435,7 @@ class DataTableBodyFunctionColumn extends React.Component{
 
     onDeleteButtonClick(){
         if(!this.state.isDeleting){
-            this.setState({isDeleting:true});
+            this.setState({isDeleting:true,showDeleteButton:false});
             this.onDeleteNotify();
         } else {
             alert("The DELETE function have been altered in memory!");
@@ -314,11 +447,12 @@ class DataTableBodyFunctionColumn extends React.Component{
         const saveBtnText = "Save";
         const deleteBtnText = "Delete";
         let saveButtonClassName = (this.state.showSaveButton)? "save-show":"save-hide";
+        let deleteButtonClassName = (this.state.showDeleteButton)? "delete-show":"delete-hide";
         return(
             <td>
                 <button className={saveButtonClassName} onClick={this.onSaveButtonClick}>{saveBtnText}</button>
                 <button onClick={this.onEditButtonClick}>{editBtnText}</button>
-                <button onClick={this.onDeleteButtonClick}>{deleteBtnText}</button>
+                <button className={deleteButtonClassName} onClick={this.onDeleteButtonClick}>{deleteBtnText}</button>
             </td>
         )
     }
