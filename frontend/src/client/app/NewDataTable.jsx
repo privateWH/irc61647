@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DataTableBody from './DataTableBody.jsx';
+import DataTableHeader from './DataTableHeader.jsx';
 import * as Model from './DataTableDataModel.jsx';
 import DataAPI from './DataAPI.jsx';
 import update from 'immutability-helper';
@@ -61,8 +62,6 @@ class NewDataTable extends React.Component {
         this.setState({showAddNewData:false});
     }
     onAddNewRecordSaveButtonClicked(record){
-        console.log("THE END COMES NEAR");
-        console.log(data);
         this.setState({showAddNewData:false});
         const data = {dataSourceId:1,
             payload:{
@@ -76,14 +75,12 @@ class NewDataTable extends React.Component {
         api.addData(data,
             this.onAddNewRecordCompleted,
             this.onAddNewRecordFailed);
-        //TODO: Add New Record Save Button Clicked
     }
     onAddNewRecordButtonClicked(){
         this.setState({showAddNewData:true});
     }
     onAddNewRecordCompleted(){
         this.loadData();
-        console.log("New Record Have been added");
     }
     onAddNewRecordFailed(){
 
@@ -130,7 +127,6 @@ class NewDataTable extends React.Component {
         this.setState({tableData:newTableData},function(){
            // console.log(this.state.tableData);
         });
-       // this.setState({errorMessage:"Failed to load initial data, please refresh the page!"});
     }
 
     onInsert10RecordsCompleted(data){
@@ -176,19 +172,14 @@ class NewDataTable extends React.Component {
     }
 
     render() {
-        let header_listOfRows = null;
-        header_listOfRows = this.state.tableData.header.map((row, index) =>
-            <DataTableHeaderRow key={row+"-"+index} value={row} className={this.settings.className.tableHeaderRow}/>
-        );
+
         return (
             <div>
             <button onClick={this.onInsert10ButtonClicked}>Insert 10 Records</button><br />
                 <button onClick={this.onAddNewRecordButtonClicked}>Insert New Record</button>
                 <div>Currently shows: 100 Records,Start Index:0. Change the DataAPI.getData method to jump to different page</div>
             <table>
-                <thead>
-                {header_listOfRows}
-                </thead>
+                <DataTableHeader header={this.state.tableData.header} />
                 <DataTableBody showAddNewData={this.state.showAddNewData} body={this.state.tableData.body} notifyAddNewData={this.onAddNewRecordSaveButtonClicked} notifyDeletedData={this.onDeleteButtonClicked} />
             </table>
             </div>
@@ -202,69 +193,4 @@ class NewDataTable extends React.Component {
 
 
 
-
-
-/*
-const DataTableBodyDefaultRow = ({value,className}) => {
-    let body_listOfColumns = null;
-    let rowIndex = value[3].rowIndex;
-    let isEditing = value[3].isEditing;
-    let isDeleting = value[3].isDeleting;
-    body_listOfColumns = [
-        <DataTableBodyTextColumn value={value[0]}/>,
-        <DataTableBodyTextColumn value={value[1]}/>,
-        <DataTableBodyTextColumn value={value[2]}/>,
-        <DataTableBodyFunctionColumn rowIndex={rowIndex} isEditing={isEditing} isDeleting={isDeleting}/>
-    ];
-
-    return (
-        <tr>{body_listOfColumns}</tr>
-    );
-}
-*/
-
-const DataTableBodyFunctionColumn = ({rowIndex,isEditing,isDeleting}) =>
-    <td><button value={rowIndex}>Edit</button><button value={rowIndex}>Delete</button></td>
-
-const DataTableBodyTextColumn = ({value,className}) =>
-    <td><span className={className}>{value}</span></td>
-
-const DataTableHeaderRow = ({value,className}) => {
-    let header_listOfColumns = null;
-    header_listOfColumns = value.map((column, index) => {
-        if (column.sortable) {
-            return (<DataTableHeaderSortableColumn key={index}
-                                                   value={column.columnName} className={column.className} />)
-        } else {
-            return (
-                <DataTableHeaderTextColumn key={index} value={column.columnName} className={column.className}/>)
-        }
-    });
-    return (
-        <tr className={className}>
-            {header_listOfColumns}
-
-        </tr>);
-}
-const DataTableHeaderTextColumn = ({value,className}) => <th><span className={className}>{value}</span></th>
-const DataTableHeaderSortableColumn = ({value,className,onClick}) => <th><span className={className} onClick={onClick}>A</span>{value}</th>
-
-
-DataTableHeaderTextColumn.propTypes = {
-    value: PropTypes.string.isRequired,
-}
-
-
-class SortableColumn extends React.Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            sortOrder:props.sortOrder
-        }
-    }
-    render(){
-
-        <span className={this.state.sortOrder}>ASC</span>
-    }
-}
 export default NewDataTable;

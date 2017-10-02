@@ -36,6 +36,9 @@ $router->accept("GET", "/^\/data\/get\/(\d+)\/start\/(\d+)\/limit\/(\d+)\/sort\/
  */
 $router->accept("POST", "/^\/data\/(\d+)\/add$/s","Controller\DataController::addNewData");
 
+$router->accept("POST", "/^\/data\/(\d+)\/update$/s", "Controller\DataController::updateData");
+
+$router->accept("POST", "/^\/data\/(\d+)\/delete$/s", "Controller\DataController::deleteData");
 $result = $router->response();
 
 if (Router::isServingStatic()){
