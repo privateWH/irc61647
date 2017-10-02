@@ -10,9 +10,12 @@ namespace DataRepository\Model;
 class IRC61647Model
 {
     private $id;
+    private $name;
+    private $model;
+    private $macAddress;
 
     /**
-     * @return int
+     * @return mixed
      */
     public function getId()
     {
@@ -20,7 +23,7 @@ class IRC61647Model
     }
 
     /**
-     * @param int $id
+     * @param mixed $id
      */
     public function setId($id)
     {
@@ -28,7 +31,7 @@ class IRC61647Model
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getName()
     {
@@ -36,7 +39,7 @@ class IRC61647Model
     }
 
     /**
-     * @param string $name
+     * @param mixed $name
      */
     public function setName($name)
     {
@@ -44,23 +47,7 @@ class IRC61647Model
     }
 
     /**
-     * @return string
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
-     * @param string $model
-     */
-    public function setModel($model)
-    {
-        $this->model = $model;
-    }
-
-    /**
-     * @return string
+     * @return mixed
      */
     public function getMacAddress()
     {
@@ -68,16 +55,12 @@ class IRC61647Model
     }
 
     /**
-     * @param string $macAddress
+     * @param mixed $macAddress
      */
     public function setMacAddress($macAddress)
     {
         $this->macAddress = $macAddress;
     }
-    private $name;
-    private $model;
-    private $macAddress;
-
 
     /**
      * IRC61647Model constructor.
@@ -92,6 +75,15 @@ class IRC61647Model
         $this->name = $name;
         $this->model = $model;
         $this->macAddress = $macAddress;
+    }
+
+    public function getModel(){
+        $model = new \stdClass();
+        $model->id = $this->id;
+        $model->name =$this->name;
+        $model->model = $this->model;
+        $model->macAddress = $this->macAddress;
+        return $model;
     }
 
 }
