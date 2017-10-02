@@ -1,7 +1,7 @@
 # This is for OHSU IRC61647 by Weinian He
 The project is written in PHP, JavaScript, CSS and HTML5. It uses ReactJS, Axios and WebPack.
 
-All codes are writen from scratch in 3 nights roughly 15 hours. The allocation of time is roughly 30% for learning ReactJs (all new), 49% for writting code, 1% for thinking about design and structure, 20% for testing and debugging.  Manual tested with: PostMan, https://regex101.com, Chrome DevTool. 
+All codes are writen from scratch in 3 nights and 2 days in the weekend roughly 30 hours. The allocation of time is roughly 20% for learning ReactJs (all new), 49% for writting code, 5% for thinking about design and structure, 26% for testing and debugging.  Manual tested with: PostMan, https://regex101.com, Chrome DevTool. 
 
 ## Feature Completed:
 - Add, Remove, Get in frontend.
@@ -15,9 +15,9 @@ The backend code works with PHP5+, frontend code goes through Babel transpile to
 ### Folder structure:
 #### Frontend
 - dir:frontend contain code for frontend, key files:
-  - ConcreteDataTable.jsx, orchastrates all the events, life-cycles of the UI. 
+  - NewDataTable.jsx, orchastrates all the events, life-cycles of the UI. 
     - Comments: The only React.component class should have done it with React.createClass to keep it simple but first attempt.
-  - IRC61647DataTable.jsx, implementation of  the full functional table UI DSL. 
+  - DataTableBody.jsx, implementation of  the functional table body UI DSL. 
     - Comments: is not data-driven for conditional render of component yet. I.e. Editing rows by swapping DataTableBodyRow with DataTableBodyUpdateRow for example. 
   - DataAPI.jsx, communicate with the backend it dependented on axios library 
     - Comments: I think the abilities to abort request is essential, my first attempt was with fetch API but ditched after realize is not compatible with old IE and can't abort request.
